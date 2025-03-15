@@ -1,12 +1,17 @@
 package com.wilson.braga.restaurante.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.wilson.braga.restaurante.dto.UsuarioDTO;
+import com.wilson.braga.restaurante.model.Role;
 import com.wilson.braga.restaurante.model.Usuario;
 import com.wilson.braga.restaurante.repository.UsuarioRepository;
 
@@ -17,55 +22,94 @@ public class UsuarioService {
 	private UsuarioRepository usuarioRepository;
 
 	// Cadastrar um novo usuário
-	public Usuario cadastroUsuario(Usuario usuario) {
+	public UsuarioDTO cadastroUsuario(UsuarioDTO usuarioDTO) {
 		// Verifica se o email já está em uso antes de cadastrar
-		if(usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+		if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
 			throw new RuntimeException("Email já está em uso.");
 		}
-		return usuarioRepository.save(usuario);
+
+		// Converte UsuarioDTO para Usuario usando o método toEntity
+		Usuario usuario = toEntity(usuarioDTO);
+
+		// Salva o usuário no banco de dados
+		Usuario usurioSalvo = usuarioRepository.save(usuario);
+
+		// Retorna o usuário salvo como DTO
+		return toDTO(usurioSalvo);
 	}
 
 	// Buscar usuário por ID
-	public Optional<Usuario> buscarUsuarioPorId(Long id) {
-		return usuarioRepository.findById(id);
+	public Optional<UsuarioDTO> buscarUsuarioPorId(Long id) {
+		return usuarioRepository.findById(id).map(this::toDTO);
 	}
 
 	// Listar os usuários com paginação
-	public Page<Usuario> listarUsuarios(Pageable pageable) {
-		return usuarioRepository.findAll(pageable);
+	public Page<UsuarioDTO> listarUsuarios(Pageable pageable) {
+		Page<Usuario> usuariosPage = usuarioRepository.findAll(pageable);
+
+		// Converte a lista de Usuario para UsuarioDTO
+		List<UsuarioDTO> usuarioDTO = usuariosPage.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+
+		return new PageImpl<>(usuarioDTO, pageable, usuariosPage.getTotalElements());
 	}
 
 	// Buscar usuário por email
-	public Usuario buscarUsuarioPorEmail(String email) {
-		return usuarioRepository.findByEmail(email)
+	public UsuarioDTO buscarUsuarioPorEmail(String email) {
+		Usuario usuario = usuarioRepository.findByEmail(email)
 				.orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+		return toDTO(usuario);
 	}
 
 	// Atualizar um usuário
-	public Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado) {
+	public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
 		return usuarioRepository.findById(id).map(usuario -> {
 			// Verifica se o email foi alterado
-			if (!usuario.getEmail().equals(usuarioAtualizado.getEmail())) {
+			if (!usuario.getEmail().equals(usuarioDTO.getEmail())) {
 				// Verifica se o novo email já está em uso
-				if (usuarioRepository.findByEmail(usuarioAtualizado.getEmail()).isPresent()) {
+				if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
 					throw new RuntimeException("Email já está em uso por outro usuário.");
 				}
 			}
 
 			// Atualiza os dados do usuário
-			usuario.setNome(usuarioAtualizado.getNome());
-			usuario.setEmail(usuarioAtualizado.getEmail());
-			usuario.setSenha(usuarioAtualizado.getSenha());
-			usuario.setRole(usuarioAtualizado.getRole());
+			usuario.setNome(usuarioDTO.getNome());
+			usuario.setEmail(usuarioDTO.getEmail());
+			usuario.setSenha(usuarioDTO.getSenha());
+			usuario.setRole(Role.valueOf(usuarioDTO.getRole()));
 
 			// Salva o usuário atualizado
-			return usuarioRepository.save(usuario);
+			Usuario usuarioAtualizado = usuarioRepository.save(usuario);
+
+			return toDTO(usuarioAtualizado);
+
 		}).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 	}
 
 	// Excluir um usuário
 	public void excluirUsuario(Long id) {
 		usuarioRepository.deleteById(id);
+	}
+
+	// Método auxiliar para converter Usuario em UsuarioDTO
+	private UsuarioDTO toDTO(Usuario usuario) {
+		UsuarioDTO dto = new UsuarioDTO();
+		dto.setId(usuario.getId());
+		dto.setNome(usuario.getNome());
+		dto.setEmail(usuario.getEmail());
+		dto.setSenha(usuario.getSenha());
+		dto.setRole(usuario.getRole().toString());
+		return dto;
+	}
+
+	// Método auxiliar para converter UsuarioDTO em Usuario
+	private Usuario toEntity(UsuarioDTO usuarioDTO) {
+		Usuario usuario = new Usuario();
+		usuario.setNome(usuarioDTO.getNome());
+		usuario.setEmail(usuarioDTO.getEmail());
+		usuario.setSenha(usuarioDTO.getSenha());
+		usuario.setRole(Role.valueOf(usuarioDTO.getRole())); // Converte String para Enum
+		return usuario;
 	}
 
 }
