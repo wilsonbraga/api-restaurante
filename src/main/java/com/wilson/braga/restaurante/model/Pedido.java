@@ -1,8 +1,10 @@
 package com.wilson.braga.restaurante.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,9 +12,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
-public class Produto implements Serializable {
+public class Pedido implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -20,17 +25,18 @@ public class Produto implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
-	private String nome;
+	@ManyToOne
+	@JoinColumn(name = "mesa_id")
+	private Mesa mesa;
 
-	private String descricao;
-
-	@Column(nullable = false)
-	private double preco;
+	private String cliente;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private CategoriaProduto categoria;
+	private StatusPedido status;
+	
+	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+	private List<ItemPedido> itens;
 
 	public Long getId() {
 		return id;
@@ -40,36 +46,36 @@ public class Produto implements Serializable {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public Mesa getMesa() {
+		return mesa;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setMesa(Mesa mesa) {
+		this.mesa = mesa;
 	}
 
-	public String getDescricao() {
-		return descricao;
+	public String getCliente() {
+		return cliente;
 	}
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
+	public void setCliente(String cliente) {
+		this.cliente = cliente;
 	}
 
-	public double getPreco() {
-		return preco;
+	public StatusPedido getStatus() {
+		return status;
 	}
 
-	public void setPreco(double preco) {
-		this.preco = preco;
+	public void setStatus(StatusPedido status) {
+		this.status = status;
 	}
 
-	public CategoriaProduto getCategoria() {
-		return categoria;
+	public List<ItemPedido> getItens() {
+		return itens;
 	}
 
-	public void setCategoria(CategoriaProduto categoria) {
-		this.categoria = categoria;
+	public void setItens(List<ItemPedido> itens) {
+		this.itens = itens;
 	}
 
 	@Override
@@ -85,8 +91,11 @@ public class Produto implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Produto other = (Produto) obj;
+		Pedido other = (Pedido) obj;
 		return Objects.equals(id, other.id);
 	}
+	
+	
+	
 
 }

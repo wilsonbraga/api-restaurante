@@ -5,14 +5,14 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Produto implements Serializable {
+public class ItemPedido implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -20,17 +20,14 @@ public class Produto implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
-	private String nome;
+	@ManyToOne
+	@JoinColumn(name = "produto_id", nullable = false)
+	private Pedido pedido;
 
-	private String descricao;
-
 	@Column(nullable = false)
-	private double preco;
+	private int quantidade;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private CategoriaProduto categoria;
+	private Double precoUnitario;
 
 	public Long getId() {
 		return id;
@@ -40,36 +37,28 @@ public class Produto implements Serializable {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public Pedido getPedido() {
+		return pedido;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setPedido(Pedido pedido) {
+		this.pedido = pedido;
 	}
 
-	public String getDescricao() {
-		return descricao;
+	public int getQuantidade() {
+		return quantidade;
 	}
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
+	public void setQuantidade(int quantidade) {
+		this.quantidade = quantidade;
 	}
 
-	public double getPreco() {
-		return preco;
+	public Double getPrecoUnitario() {
+		return precoUnitario;
 	}
 
-	public void setPreco(double preco) {
-		this.preco = preco;
-	}
-
-	public CategoriaProduto getCategoria() {
-		return categoria;
-	}
-
-	public void setCategoria(CategoriaProduto categoria) {
-		this.categoria = categoria;
+	public void setPrecoUnitario(Double precoUnitario) {
+		this.precoUnitario = precoUnitario;
 	}
 
 	@Override
@@ -85,8 +74,9 @@ public class Produto implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Produto other = (Produto) obj;
+		ItemPedido other = (ItemPedido) obj;
 		return Objects.equals(id, other.id);
 	}
+	
 
 }
