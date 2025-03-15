@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.wilson.braga.restaurante.dto.UsuarioDTO;
@@ -21,6 +22,9 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	// Cadastrar um novo usuário
 	public UsuarioDTO cadastroUsuario(UsuarioDTO usuarioDTO) {
 		// Verifica se o email já está em uso antes de cadastrar
@@ -30,6 +34,10 @@ public class UsuarioService {
 
 		// Converte UsuarioDTO para Usuario usando o método toEntity
 		Usuario usuario = toEntity(usuarioDTO);
+		
+		// Criptografa a senha antes de salvar
+		String senhaCriptografada = passwordEncoder.encode(usuarioDTO.getSenha());
+		usuario.setSenha(senhaCriptografada);
 
 		// Salva o usuário no banco de dados
 		Usuario usurioSalvo = usuarioRepository.save(usuario);
@@ -75,9 +83,13 @@ public class UsuarioService {
 			// Atualiza os dados do usuário
 			usuario.setNome(usuarioDTO.getNome());
 			usuario.setEmail(usuarioDTO.getEmail());
-			usuario.setSenha(usuarioDTO.getSenha());
 			usuario.setRole(Role.valueOf(usuarioDTO.getRole()));
-
+			
+			// Atualiza a senha apenas se uma nova senha for fornecida
+			if(usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
+				usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha())); // Criptografa a nova senha
+			}
+			
 			// Salva o usuário atualizado
 			Usuario usuarioAtualizado = usuarioRepository.save(usuario);
 
@@ -97,7 +109,6 @@ public class UsuarioService {
 		dto.setId(usuario.getId());
 		dto.setNome(usuario.getNome());
 		dto.setEmail(usuario.getEmail());
-		dto.setSenha(usuario.getSenha());
 		dto.setRole(usuario.getRole().toString());
 		return dto;
 	}
@@ -107,7 +118,6 @@ public class UsuarioService {
 		Usuario usuario = new Usuario();
 		usuario.setNome(usuarioDTO.getNome());
 		usuario.setEmail(usuarioDTO.getEmail());
-		usuario.setSenha(usuarioDTO.getSenha());
 		usuario.setRole(Role.valueOf(usuarioDTO.getRole())); // Converte String para Enum
 		return usuario;
 	}
