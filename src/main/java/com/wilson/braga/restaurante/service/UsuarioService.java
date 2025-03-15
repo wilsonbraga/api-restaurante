@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.wilson.braga.restaurante.dto.UsuarioDTO;
 import com.wilson.braga.restaurante.model.Role;
@@ -29,7 +31,7 @@ public class UsuarioService {
 	public UsuarioDTO cadastroUsuario(UsuarioDTO usuarioDTO) {
 		// Verifica se o email já está em uso antes de cadastrar
 		if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
-			throw new RuntimeException("Email já está em uso.");
+			throw new ResponseStatusException(HttpStatus.CONFLICT ,"Email já está em uso.");
 		}
 
 		// Converte UsuarioDTO para Usuario usando o método toEntity
