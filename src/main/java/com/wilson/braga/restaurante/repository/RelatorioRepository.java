@@ -13,5 +13,5 @@ import com.wilson.braga.restaurante.model.TipoRelatorio;
 public interface RelatorioRepository extends JpaRepository<Relatorio, Long> {
 	
 	// Buscar relatórios por tipo e período
-	List<Relatorio> findByTipoEndDataInicioBetween(TipoRelatorio tipo, LocalDate dataInicio, LocalDate dataFim);
+	List<Relatorio> findByTipoAndDataInicialBetween(TipoRelatorio tipo, LocalDate dataInicial, LocalDate dataFim);
 }
