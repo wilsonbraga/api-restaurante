@@ -5,7 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,10 +23,11 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioService usuarioService;
-	
-	//metodo lista com paginacao, fiz uma abordagem híbrida
-	//limitei o size no back-end mas permite que o page e sort sejam passados pelo front-end
-	
+
+	// metodo lista com paginacao, fiz uma abordagem híbrida
+	// limitei o size no back-end mas permite que o page e sort sejam passados pelo
+	// front-end
+
 	@GetMapping
 	public Page<UsuarioDTO> listarUsuarios(@RequestParam(defaultValue = "0") int page, // Página atual (padrão: 0)
 			@RequestParam(required = false) Integer size, // Tamanho da página (opcional)
@@ -42,6 +47,7 @@ public class UsuarioController {
 			String[] sortParams = sort.split(",");
 			if (sortParams.length == 2) {
 				direction = Sort.Direction.fromString(sortParams[1]); // Direção (asc ou desc)
+
 			}
 		}
 		// Cria o objeto Pageable
@@ -49,6 +55,17 @@ public class UsuarioController {
 
 		// Retorna os usuários paginados
 		return usuarioService.listarUsuarios(pageable);
+	}
+
+	// Endpoint para cadastrar um novo usuário
+	@PostMapping("/cadastro")
+	public ResponseEntity<UsuarioDTO> cadastroUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+		// Chama o serviço para cadastrar o usuário
+		UsuarioDTO usuarioSalvo = usuarioService.cadastroUsuario(usuarioDTO);
+
+		// Retorna o usuário cadastrado com status HTTP 201 (Created)
+		return new ResponseEntity<>(usuarioSalvo, HttpStatus.CREATED);
+
 	}
 
 }
