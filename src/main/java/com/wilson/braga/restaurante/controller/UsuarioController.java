@@ -61,7 +61,7 @@ public class UsuarioController {
 
 	// Endpoint para cadastrar um novo usuário
 	@PostMapping("/cadastro")
-	public ResponseEntity<UsuarioDTO> cadastroUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+	public ResponseEntity<UsuarioDTO> cadastroUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
 		// Chama o serviço para cadastrar o usuário
 		UsuarioDTO usuarioSalvo = usuarioService.cadastroUsuario(usuarioDTO);
 
@@ -69,5 +69,7 @@ public class UsuarioController {
 		return new ResponseEntity<>(usuarioSalvo, HttpStatus.CREATED);
 
 	}
+	
+	
 
 }
