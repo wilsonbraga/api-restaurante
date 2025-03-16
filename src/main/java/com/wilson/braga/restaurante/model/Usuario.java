@@ -3,6 +3,7 @@ package com.wilson.braga.restaurante.model;
 import java.io.Serializable;
 import java.util.Objects;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +11,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Usuario implements Serializable {
@@ -20,12 +24,17 @@ public class Usuario implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Min(value = 2, message = "Nome não pode ter menos de 2 caracteres.")
+	@Max(value = 100, message = "Nome não pode ter mais de 100 caracteres.")
 	@Column(nullable = false)
+	@NotBlank(message = "Nome não pode está em banco.")
 	private String nome;
 	
+	@NotBlank(message = "email não pode está em banco.")
 	@Column(nullable = false, unique = true)
 	private String email;
 	
+	@NotBlank(message = "Senha não pode está em banco.")
 	@Column(nullable = false)
 	private String senha;
 	
