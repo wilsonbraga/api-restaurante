@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wilson.braga.restaurante.dto.UsuarioDTO;
 import com.wilson.braga.restaurante.service.UsuarioService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
