@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wilson.braga.restaurante.dto.UsuarioDTO;
+import com.wilson.braga.restaurante.exception.TamanhoPaginaInvalidoException;
 import com.wilson.braga.restaurante.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -35,10 +36,16 @@ public class UsuarioController {
 			@RequestParam(required = false) Integer size, // Tamanho da página (opcional)
 			@RequestParam(required = false) String sort) { // Ordenação (opcional)
 
-		// Define o tamanho máximo da página
-
+	
+		
+		// Validação do tamanho da página (size)
 		int maxPageSize = 50;
-		int pageSize = (size != null && size > 0 && size <= maxPageSize) ? size : 10;
+		if(size != null && (size <= 0 || size > maxPageSize)) {
+			throw new TamanhoPaginaInvalidoException(
+	                "O tamanho da página deve ser maior que 0 e menor ou igual a " + maxPageSize + ".");
+		}
+		
+		int pageSize = (size != null) ? size : 10;
 
 		// Configura a ordenação
 
