@@ -123,7 +123,12 @@ public class UsuarioService {
 		Usuario usuario = new Usuario();
 		usuario.setNome(usuarioDTO.getNome());
 		usuario.setEmail(usuarioDTO.getEmail());
-		usuario.setRole(Role.valueOf(usuarioDTO.getRole())); // Converte String para Enum
+		try {
+			usuario.setRole(Role.valueOf(usuarioDTO.getRole())); // Converte String para Enum
+		} catch (IllegalArgumentException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Papel inválido.");
+		}
+		
 		return usuario;
 	}
 
