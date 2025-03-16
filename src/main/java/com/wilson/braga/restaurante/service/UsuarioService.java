@@ -58,7 +58,10 @@ public class UsuarioService {
 		Page<Usuario> usuariosPage = usuarioRepository.findAll(pageable);
 
 		// Converte a lista de Usuario para UsuarioDTO
-		List<UsuarioDTO> usuarioDTO = usuariosPage.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+		List<UsuarioDTO> usuarioDTO = usuariosPage.getContent()
+				.stream()
+				.map(this::toDTO)
+				.collect(Collectors.toList());
 
 		return new PageImpl<>(usuarioDTO, pageable, usuariosPage.getTotalElements());
 	}
@@ -66,7 +69,7 @@ public class UsuarioService {
 	// Buscar usuário por email
 	public UsuarioDTO buscarUsuarioPorEmail(String email) {
 		Usuario usuario = usuarioRepository.findByEmail(email)
-				.orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
 
 		return toDTO(usuario);
 	}
@@ -78,7 +81,7 @@ public class UsuarioService {
 			if (!usuario.getEmail().equals(usuarioDTO.getEmail())) {
 				// Verifica se o novo email já está em uso
 				if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
-					throw new RuntimeException("Email já está em uso por outro usuário.");
+					throw new ResponseStatusException(HttpStatus.CONFLICT,"Email já está em uso por outro usuário.");
 				}
 			}
 
@@ -97,7 +100,7 @@ public class UsuarioService {
 
 			return toDTO(usuarioAtualizado);
 
-		}).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+		}).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado."));
 	}
 
 	// Excluir um usuário
