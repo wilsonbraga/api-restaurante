@@ -1,5 +1,7 @@
 package com.wilson.braga.restaurante.controller;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wilson.braga.restaurante.dto.UsuarioDTO;
+import com.wilson.braga.restaurante.exception.OrdenacaoInvalidaException;
 import com.wilson.braga.restaurante.exception.TamanhoPaginaInvalidoException;
 import com.wilson.braga.restaurante.service.UsuarioService;
 
@@ -36,15 +39,13 @@ public class UsuarioController {
 			@RequestParam(required = false) Integer size, // Tamanho da página (opcional)
 			@RequestParam(required = false) String sort) { // Ordenação (opcional)
 
-	
-		
 		// Validação do tamanho da página (size)
 		int maxPageSize = 50;
-		if(size != null && (size <= 0 || size > maxPageSize)) {
+		if (size != null && (size <= 0 || size > maxPageSize)) {
 			throw new TamanhoPaginaInvalidoException(
-	                "O tamanho da página deve ser maior que 0 e menor ou igual a " + maxPageSize + ".");
+					"O tamanho da página deve ser maior que 0 e menor ou igual a " + maxPageSize + ".");
 		}
-		
+
 		int pageSize = (size != null) ? size : 10;
 
 		// Configura a ordenação
@@ -54,10 +55,12 @@ public class UsuarioController {
 
 		if (sort != null) {
 			String[] sortParams = sort.split(",");
-			if (sortParams.length == 2) {
-				direction = Sort.Direction.fromString(sortParams[1]); // Direção (asc ou desc)
-
+			if (sortParams.length != 2 || !Arrays.asList("asc", "desc").contains(sortParams[1].toLowerCase())) {
+				throw new OrdenacaoInvalidaException(
+						"O parâmetro de ordenação deve estar no formato 'campo,direção' (ex: 'nome,asc').");
 			}
+			direction = Sort.Direction.fromString(sortParams[1]); // Direção (asc ou desc)
+			property = sortParams[0]; // Propriedade para ordenação
 		}
 		// Cria o objeto Pageable
 		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(direction, property));
@@ -76,7 +79,5 @@ public class UsuarioController {
 		return new ResponseEntity<>(usuarioSalvo, HttpStatus.CREATED);
 
 	}
-	
-	
 
 }
