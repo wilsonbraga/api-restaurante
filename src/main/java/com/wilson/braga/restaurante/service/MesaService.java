@@ -1,6 +1,7 @@
 package com.wilson.braga.restaurante.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,11 @@ public class MesaService {
 		return mesas.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
-	// TODO BUSCAR MESA POR ID
+	// BUSCAR MESA POR ID
+	public Optional<MesaDTO> buscarMesaPorId(Long id) {
+		return mesaRepository.findById(id).map(this::toDTO);
+	}
+
 
 	// Método auxiliar para converter Mesa em MesaDTO
 	private MesaDTO toDTO(Mesa mesa) {
