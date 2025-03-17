@@ -1,6 +1,7 @@
 package com.wilson.braga.restaurante.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -12,12 +13,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 
 @Entity
 public class Pagamento implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,21 @@ public class Pagamento implements Serializable {
 
 	@Column(nullable = false)
 	private Double valor;
+
+	@Column(nullable = false)
+	private LocalDateTime dataPagamento;
+
+	@ManyToOne
+	@JoinColumn(name = "operador_id")
+	private Usuario operador;
+
+	@Column
+	private String observacao;
+	
+	@PrePersist
+    public void prePersist() {
+        this.dataPagamento = LocalDateTime.now();
+    }
 
 	public Long getId() {
 		return id;
@@ -65,6 +81,32 @@ public class Pagamento implements Serializable {
 	public void setValor(Double valor) {
 		this.valor = valor;
 	}
+	
+	
+
+	public LocalDateTime getDataPagamento() {
+		return dataPagamento;
+	}
+
+	public void setDataPagamento(LocalDateTime dataPagamento) {
+		this.dataPagamento = dataPagamento;
+	}
+
+	public Usuario getOperador() {
+		return operador;
+	}
+
+	public void setOperador(Usuario operador) {
+		this.operador = operador;
+	}
+
+	public String getObservacao() {
+		return observacao;
+	}
+
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
+	}
 
 	@Override
 	public int hashCode() {
@@ -82,6 +124,5 @@ public class Pagamento implements Serializable {
 		Pagamento other = (Pagamento) obj;
 		return Objects.equals(id, other.id);
 	}
-	
-	
+
 }
