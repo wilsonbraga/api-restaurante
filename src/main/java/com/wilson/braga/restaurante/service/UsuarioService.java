@@ -31,12 +31,12 @@ public class UsuarioService {
 	public UsuarioDTO cadastroUsuario(UsuarioDTO usuarioDTO) {
 		// Verifica se o email já está em uso antes de cadastrar
 		if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
-			throw new ResponseStatusException(HttpStatus.CONFLICT ,"Email já está em uso.");
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já está em uso.");
 		}
 
 		// Converte UsuarioDTO para Usuario usando o método toEntity
 		Usuario usuario = toEntity(usuarioDTO);
-		
+
 		// Criptografa a senha antes de salvar
 		String senhaCriptografada = passwordEncoder.encode(usuarioDTO.getSenha());
 		usuario.setSenha(senhaCriptografada);
@@ -58,10 +58,7 @@ public class UsuarioService {
 		Page<Usuario> usuariosPage = usuarioRepository.findAll(pageable);
 
 		// Converte a lista de Usuario para UsuarioDTO
-		List<UsuarioDTO> usuarioDTO = usuariosPage.getContent()
-				.stream()
-				.map(this::toDTO)
-				.collect(Collectors.toList());
+		List<UsuarioDTO> usuarioDTO = usuariosPage.getContent().stream().map(this::toDTO).collect(Collectors.toList());
 
 		return new PageImpl<>(usuarioDTO, pageable, usuariosPage.getTotalElements());
 	}
@@ -81,7 +78,7 @@ public class UsuarioService {
 			if (!usuario.getEmail().equals(usuarioDTO.getEmail())) {
 				// Verifica se o novo email já está em uso
 				if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
-					throw new ResponseStatusException(HttpStatus.CONFLICT,"Email já está em uso por outro usuário.");
+					throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já está em uso por outro usuário.");
 				}
 			}
 
@@ -89,22 +86,25 @@ public class UsuarioService {
 			usuario.setNome(usuarioDTO.getNome());
 			usuario.setEmail(usuarioDTO.getEmail());
 			usuario.setRole(Role.valueOf(usuarioDTO.getRole()));
-			
+
 			// Atualiza a senha apenas se uma nova senha for fornecida
-			if(usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
+			if (usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
 				usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha())); // Criptografa a nova senha
 			}
-			
+
 			// Salva o usuário atualizado
 			Usuario usuarioAtualizado = usuarioRepository.save(usuario);
 
 			return toDTO(usuarioAtualizado);
 
-		}).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado."));
+		}).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
 	}
 
 	// Excluir um usuário
 	public void excluirUsuario(Long id) {
+		if (!usuarioRepository.existsById(id)) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado.");
+		}
 		usuarioRepository.deleteById(id);
 	}
 
@@ -128,7 +128,7 @@ public class UsuarioService {
 		} catch (IllegalArgumentException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Papel inválido.");
 		}
-		
+
 		return usuario;
 	}
 
