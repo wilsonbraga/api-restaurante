@@ -20,9 +20,13 @@ public class ItemPedido implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "produto_id", nullable = false)
+	@ManyToOne 
+	@JoinColumn(name = "pedido_id", nullable = false)
 	private Pedido pedido;
+	
+	@ManyToOne
+    @JoinColumn(name = "produto_id", nullable = false)
+    private Produto produto;
 
 	@Column(nullable = false)
 	private int quantidade;
@@ -59,6 +63,21 @@ public class ItemPedido implements Serializable {
 
 	public void setPrecoUnitario(Double precoUnitario) {
 		this.precoUnitario = precoUnitario;
+	}
+	
+	public Produto getProduto() {
+		return produto;
+	}
+	//definir automaticamente o precoUnitario com base no preço do produto.
+	public void setProduto(Produto produto) {
+		this.produto = produto;
+		if(produto != null) {
+			this.precoUnitario = produto.getPreco();
+		}
+	}
+	//calcula o valor total do item (quantidade × preço unitário)
+	public Double getSubtotatal() {
+		return quantidade * precoUnitario;
 	}
 
 	@Override
