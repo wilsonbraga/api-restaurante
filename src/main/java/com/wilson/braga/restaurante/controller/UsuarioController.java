@@ -9,9 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,12 +82,27 @@ public class UsuarioController {
 		return new ResponseEntity<>(usuarioSalvo, HttpStatus.CREATED);
 
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable Long id){
-		return usuarioService.buscarUsuarioPorId(id)
-				.map(ResponseEntity::ok)  // Retorna 200 OK com o usuário
+	public ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable Long id) {
+		return usuarioService.buscarUsuarioPorId(id).map(ResponseEntity::ok) // Retorna 200 OK com o usuário
 				.orElseGet(() -> ResponseEntity.notFound().build()); // Retorna 404 Not Found se o usuário não existir
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id,
+			@Valid @RequestBody UsuarioDTO usuarioDTO) {
+
+		UsuarioDTO usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
+		return ResponseEntity.ok(usuarioAtualizado); // Retorna 200 OK com o usuário atualizado
+
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> excluirUsuario(@PathVariable Long id) {
+		usuarioService.excluirUsuario(id);
+		return ResponseEntity.noContent().build();
+
 	}
 
 }
