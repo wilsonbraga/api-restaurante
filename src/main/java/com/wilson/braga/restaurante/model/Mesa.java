@@ -1,15 +1,20 @@
 package com.wilson.braga.restaurante.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Mesa implements Serializable {
@@ -29,6 +34,9 @@ public class Mesa implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private StatusMesa status;
+	
+	@OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Pedido> pedidos = new ArrayList<>();
 
 	
 	public Long getId() {
@@ -61,6 +69,14 @@ public class Mesa implements Serializable {
 
 	public void setStatus(StatusMesa status) {
 		this.status = status;
+	}
+	
+	public List<Pedido> getPedidos() {
+		return pedidos;
+	}
+	
+	public void setPedidos(List<Pedido> pedidos) {
+		this.pedidos = pedidos;
 	}
 
 	@Override
