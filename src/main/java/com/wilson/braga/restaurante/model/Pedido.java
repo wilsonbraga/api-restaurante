@@ -37,6 +37,10 @@ public class Pedido implements Serializable {
 	
 	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
 	private List<ItemPedido> itens;
+	
+	@ManyToOne
+    @JoinColumn(name = "garcom_id")
+    private Usuario garcom;
 
 	public Long getId() {
 		return id;
@@ -76,6 +80,14 @@ public class Pedido implements Serializable {
 
 	public void setItens(List<ItemPedido> itens) {
 		this.itens = itens;
+	}
+	
+	public Usuario getGarcom() {
+		return garcom;
+	}
+	
+	public void setGarcom(Usuario garcom) {
+		this.garcom = garcom;
 	}
 
 	@Override
