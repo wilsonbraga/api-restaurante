@@ -39,6 +39,11 @@ public class ProdutoService {
 		return convertToDTO(produtoSalvo);
 	}
 	
+	public Page<ProdutoDTO> buscarProdutosMaisVendidos(Pageable pageable){
+		Page<Produto> litaProdutos = produtoRepository.findAllByOrderByTotalVendasDesc(pageable);
+		return litaProdutos.map(produto -> convertToDTO(produto));
+	}
+	
 	@SuppressWarnings("unused")
 	private Produto convertToEntity(ProdutoDTO dto) {
 		Produto entity = new Produto();
