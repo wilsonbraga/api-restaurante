@@ -33,6 +33,12 @@ public class Produto implements Serializable {
 	private CategoriaProduto categoria;
 	
 	private String imagem;
+	
+	private Boolean disponivel;
+	
+	private int tempoPreparoMedio;
+	
+	private int totalVendas; // para estatísticas
 
 	public Long getId() {
 		return id;
@@ -80,6 +86,29 @@ public class Produto implements Serializable {
 	
 	public void setImagem(String imagem) {
 		this.imagem = imagem;
+	}
+	
+	public Boolean getDisponivel() {
+		return disponivel;
+	}
+	
+	public void setDisponivel(Boolean disponivel) {
+		this.disponivel = disponivel;
+	}
+	public int getTempoPreparoMedio() {
+		return tempoPreparoMedio;
+	}
+	
+	public void setTempoPreparoMedio(int tempoPreparoMedio) {
+		this.tempoPreparoMedio = tempoPreparoMedio;
+	}
+	
+	public int getTotalVendas() {
+		return totalVendas;
+	}
+	
+	public void setTotalVendas(int totalVendas) {
+		this.totalVendas = totalVendas;
 	}
 
 	@Override
