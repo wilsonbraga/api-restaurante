@@ -31,6 +31,8 @@ public class Produto implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CategoriaProduto categoria;
+	
+	private String imagem;
 
 	public Long getId() {
 		return id;
@@ -70,6 +72,14 @@ public class Produto implements Serializable {
 
 	public void setCategoria(CategoriaProduto categoria) {
 		this.categoria = categoria;
+	}
+	
+	public String getImagem() {
+		return imagem;
+	}
+	
+	public void setImagem(String imagem) {
+		this.imagem = imagem;
 	}
 
 	@Override
