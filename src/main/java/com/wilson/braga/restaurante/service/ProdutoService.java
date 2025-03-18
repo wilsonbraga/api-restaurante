@@ -1,5 +1,8 @@
 package com.wilson.braga.restaurante.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +25,14 @@ public class ProdutoService {
 		return page.map(this::convertToDTO);
 	}
 	
+	public List<ProdutoDTO> buscarTop10ProdutosMaisVendidos(){
+		List<Produto> produtosTop10 = produtoRepository.findTop10ByOrderByTotalVendasDesc();
+		return produtosTop10.stream()
+				.map(this::convertToDTO)
+				.collect(Collectors.toList());
+		
+ 	}
+	
 	@Transactional
 	public ProdutoDTO salvarProduto(ProdutoDTO produtoDTO) {
 		Produto produto = convertToEntity(produtoDTO);
@@ -43,6 +54,10 @@ public class ProdutoService {
 		Page<Produto> litaProdutos = produtoRepository.findAllByOrderByTotalVendasDesc(pageable);
 		return litaProdutos.map(produto -> convertToDTO(produto));
 	}
+	
+	
+	
+	
 	
 	@SuppressWarnings("unused")
 	private Produto convertToEntity(ProdutoDTO dto) {
