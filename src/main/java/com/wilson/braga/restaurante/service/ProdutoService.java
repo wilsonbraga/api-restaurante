@@ -21,6 +21,40 @@ public class ProdutoService {
 		Page<Produto> page = produtoRepository.findAll(pageable);
 		return page.map(this::convertToDTO);
 	}
+	
+	@Transactional
+	public ProdutoDTO salvarProduto(ProdutoDTO produtoDTO) {
+		Produto produto = convertToEntity(produtoDTO);
+		
+		// Definindo valores padrão se necessário
+		if(produto.getDisponivel() == null) {
+			produto.setDisponivel(true);
+		}
+		
+		if(produto.getTotalVendas() <= 0) {
+			produto.setTotalVendas(0);
+		}
+		
+		Produto produtoSalvo = produtoRepository.save(produto);
+		return convertToDTO(produtoSalvo);
+	}
+	
+	@SuppressWarnings("unused")
+	private Produto convertToEntity(ProdutoDTO dto) {
+		Produto entity = new Produto();
+		if (dto.getId() != null) {
+			entity.setId(dto.getId());
+		}
+		entity.setNome(dto.getNome());
+		entity.setDescricao(dto.getDescricao());
+		entity.setPreco(dto.getPreco());
+		entity.setCategoria(dto.getCategoria());
+		entity.setImagem(dto.getImagem());
+		entity.setDisponivel(dto.getDisponivel());
+		entity.setTempoPreparoMedio(dto.getTempoPreparoMedio());
+		// Não coiei totalVendas do DTO para a entidade por segurança
+		return entity;
+	}
 
 	// Conversão entre DTO e Entidade
 	private ProdutoDTO convertToDTO(Produto produto) {
