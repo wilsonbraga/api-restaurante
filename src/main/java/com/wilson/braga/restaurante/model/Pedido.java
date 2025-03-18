@@ -63,6 +63,12 @@ public class Pedido implements Serializable {
 	@Column
 	private String observacoes;
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private TipoAtendimento tipoAtendimento;
+
+	private Integer tempoPreparo; // em minutos
+
 	@PrePersist
 	public void prePersist() {
 		this.dataCriacao = LocalDateTime.now();
@@ -182,12 +188,27 @@ public class Pedido implements Serializable {
 	public void setObservacoes(String observacoes) {
 		this.observacoes = observacoes;
 	}
-	
+
 	public Double getTotal() {
-		return itens.stream()
-				.mapToDouble(item -> item.getQuantidade() * item.getPrecoUnitario())
-				.sum();
-						
+		return itens.stream().mapToDouble(item -> item.getQuantidade() * item.getPrecoUnitario()).sum();
+
+	}
+	
+
+	public TipoAtendimento getTipoAtendimento() {
+		return tipoAtendimento;
+	}
+
+	public void setTipoAtendimento(TipoAtendimento tipoAtendimento) {
+		this.tipoAtendimento = tipoAtendimento;
+	}
+
+	public Integer getTempoPreparo() {
+		return tempoPreparo;
+	}
+
+	public void setTempoPreparo(Integer tempoPreparo) {
+		this.tempoPreparo = tempoPreparo;
 	}
 
 	@Override
