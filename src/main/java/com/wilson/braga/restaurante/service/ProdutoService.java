@@ -102,6 +102,16 @@ public class ProdutoService {
 		return convertToDTO(produtoAtualizado);
 	}
 
+	@Transactional
+	public void incrementarVendas(Long id, int quantidade) {
+		
+		Produto produto = produtoRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id: " + id));
+
+		produto.setTotalVendas(produto.getTotalVendas() + quantidade);
+		produtoRepository.save(produto);
+	}
+
 	@SuppressWarnings("unused")
 	private Produto convertToEntity(ProdutoDTO dto) {
 		Produto entity = new Produto();
