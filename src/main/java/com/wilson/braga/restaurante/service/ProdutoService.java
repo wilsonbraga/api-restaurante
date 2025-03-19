@@ -6,8 +6,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.wilson.braga.restaurante.dto.ProdutoDTO;
 import com.wilson.braga.restaurante.model.Produto;
@@ -24,41 +26,55 @@ public class ProdutoService {
 		Page<Produto> page = produtoRepository.findAll(pageable);
 		return page.map(this::convertToDTO);
 	}
-	
-	public List<ProdutoDTO> buscarTop10ProdutosMaisVendidos(){
+
+	public List<ProdutoDTO> buscarTop10ProdutosMaisVendidos() {
 		List<Produto> produtosTop10 = produtoRepository.findTop10ByOrderByTotalVendasDesc();
-		return produtosTop10.stream()
-				.map(this::convertToDTO)
-				.collect(Collectors.toList());
-		
- 	}
-	
+		return produtosTop10.stream().map(this::convertToDTO).collect(Collectors.toList());
+
+	}
+
 	@Transactional
 	public ProdutoDTO salvarProduto(ProdutoDTO produtoDTO) {
 		Produto produto = convertToEntity(produtoDTO);
-		
+
 		// Definindo valores padrão se necessário
-		if(produto.getDisponivel() == null) {
+		if (produto.getDisponivel() == null) {
 			produto.setDisponivel(true);
 		}
-		
-		if(produto.getTotalVendas() <= 0) {
+
+		if (produto.getTotalVendas() <= 0) {
 			produto.setTotalVendas(0);
 		}
-		
+
 		Produto produtoSalvo = produtoRepository.save(produto);
 		return convertToDTO(produtoSalvo);
 	}
-	
-	public Page<ProdutoDTO> buscarProdutosMaisVendidos(Pageable pageable){
+
+	public Page<ProdutoDTO> buscarProdutosMaisVendidos(Pageable pageable) {
 		Page<Produto> litaProdutos = produtoRepository.findAllByOrderByTotalVendasDesc(pageable);
 		return litaProdutos.map(produto -> convertToDTO(produto));
 	}
 	
-	
-	
-	
-	
+	@Transactional
+	public ProdutoDTO atualizarProduto(Long id, ProdutoDTO produtoDTO) {
+		// Verificar se o produto existe
+		Produto existingProduto = produtoRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id" + id));
+		// Atualizar todos os campos exceto o ID e totalVendas
+		existingProduto.setNome(produtoDTO.getNome());
+		existingProduto.setDescricao(produtoDTO.getDescricao());
+		existingProduto.setPreco(produtoDTO.getPreco());
+		existingProduto.setCategoria(produtoDTO.getCategoria());
+		existingProduto.setImagem(produtoDTO.getImagem());
+		existingProduto.setDisponivel(produtoDTO.getDisponivel());
+		existingProduto.setTempoPreparoMedio(produtoDTO.getTempoPreparoMedio());
+
+		// Não atualizar totalVendas diretamente por motivos de segurança
+
+		Produto produtoAtualizado = produtoRepository.save(existingProduto);
+		return convertToDTO(produtoAtualizado);
+	}
+
 	@SuppressWarnings("unused")
 	private Produto convertToEntity(ProdutoDTO dto) {
 		Produto entity = new Produto();
