@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.wilson.braga.restaurante.dto.ProdutoDTO;
+import com.wilson.braga.restaurante.model.CategoriaProduto;
 import com.wilson.braga.restaurante.model.Produto;
 import com.wilson.braga.restaurante.repository.ProdutoRepository;
 
@@ -54,7 +55,7 @@ public class ProdutoService {
 		Page<Produto> litaProdutos = produtoRepository.findAllByOrderByTotalVendasDesc(pageable);
 		return litaProdutos.map(produto -> convertToDTO(produto));
 	}
-	
+
 	@Transactional
 	public ProdutoDTO atualizarProduto(Long id, ProdutoDTO produtoDTO) {
 		// Verificar se o produto existe
@@ -73,6 +74,12 @@ public class ProdutoService {
 
 		Produto produtoAtualizado = produtoRepository.save(existingProduto);
 		return convertToDTO(produtoAtualizado);
+	}
+
+	public Page<ProdutoDTO> buscarPorCategoria(CategoriaProduto categotia, Pageable pageable) {
+		Page<Produto> listaCateria = produtoRepository.findByCategoria(categotia, pageable);
+		return listaCateria.map(this::convertToDTO);	
+		//TODO: FAZER A VALIDACAO DE CATEGORIA E Pageable
 	}
 
 	@SuppressWarnings("unused")
