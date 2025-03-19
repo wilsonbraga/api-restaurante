@@ -82,12 +82,24 @@ public class ProdutoService {
 		// TODO: FAZER A VALIDACAO DE CATEGORIA E Pageable
 	}
 
+	@Transactional
 	public void excluir(Long id) {
 		if (!produtoRepository.existsById(id)) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id: " + id);
 		}
 
 		produtoRepository.deleteById(id);
+	}
+
+	@Transactional
+	public ProdutoDTO atualizarProdutoDisponivel(Long id, boolean disponivel) {
+		Produto produto = produtoRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id: " + id));
+
+		produto.setDisponivel(disponivel);
+
+		Produto produtoAtualizado = produtoRepository.save(produto);
+		return convertToDTO(produtoAtualizado);
 	}
 
 	@SuppressWarnings("unused")
