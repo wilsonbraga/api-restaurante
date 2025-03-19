@@ -60,7 +60,7 @@ public class ProdutoService {
 	public ProdutoDTO atualizarProduto(Long id, ProdutoDTO produtoDTO) {
 		// Verificar se o produto existe
 		Produto existingProduto = produtoRepository.findById(id).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id" + id));
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id: " + id));
 		// Atualizar todos os campos exceto o ID e totalVendas
 		existingProduto.setNome(produtoDTO.getNome());
 		existingProduto.setDescricao(produtoDTO.getDescricao());
@@ -78,8 +78,16 @@ public class ProdutoService {
 
 	public Page<ProdutoDTO> buscarPorCategoria(CategoriaProduto categotia, Pageable pageable) {
 		Page<Produto> listaCateria = produtoRepository.findByCategoria(categotia, pageable);
-		return listaCateria.map(this::convertToDTO);	
-		//TODO: FAZER A VALIDACAO DE CATEGORIA E Pageable
+		return listaCateria.map(this::convertToDTO);
+		// TODO: FAZER A VALIDACAO DE CATEGORIA E Pageable
+	}
+
+	public void excluir(Long id) {
+		if (!produtoRepository.existsById(id)) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com id: " + id);
+		}
+
+		produtoRepository.deleteById(id);
 	}
 
 	@SuppressWarnings("unused")
