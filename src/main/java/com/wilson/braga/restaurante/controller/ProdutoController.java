@@ -42,5 +42,11 @@ public class ProdutoController {
 				.toUri();
 		return ResponseEntity.created(uri).body(novoProduto);
 	}
+	
+	@GetMapping("/mais-vendidos")
+	public ResponseEntity<Page<ProdutoDTO>> buscarProdutosMaisVendidos(@PageableDefault(size = 10) Pageable pageable) {
+		Page<ProdutoDTO> produtosMaisVendidos = produtoService.buscarProdutosMaisVendidos(pageable);
+		return ResponseEntity.ok(produtosMaisVendidos);
+	}
 
 }
