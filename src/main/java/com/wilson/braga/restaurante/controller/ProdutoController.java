@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.wilson.braga.restaurante.dto.ProdutoDTO;
+import com.wilson.braga.restaurante.model.CategoriaProduto;
 import com.wilson.braga.restaurante.service.ProdutoService;
 
 import jakarta.validation.Valid;
@@ -45,19 +46,19 @@ public class ProdutoController {
 				.toUri();
 		return ResponseEntity.created(uri).body(novoProduto);
 	}
-	
+
 	@GetMapping("/mais-vendidos")
 	public ResponseEntity<Page<ProdutoDTO>> buscarProdutosMaisVendidos(@PageableDefault(size = 10) Pageable pageable) {
 		Page<ProdutoDTO> produtosMaisVendidos = produtoService.buscarProdutosMaisVendidos(pageable);
 		return ResponseEntity.ok(produtosMaisVendidos);
 	}
-	
+
 	@GetMapping("/top10-mais-vendidos")
 	public ResponseEntity<List<ProdutoDTO>> buscarTop10ProdutosMaisVendidos() {
 		List<ProdutoDTO> top10Produtos = produtoService.buscarTop10ProdutosMaisVendidos();
 		return ResponseEntity.ok(top10Produtos);
 	}
-	
+
 	@PutMapping("/{id}")
 	public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Long id,
 			@Valid @RequestBody ProdutoDTO produtoDTO) {
@@ -65,5 +66,13 @@ public class ProdutoController {
 		return ResponseEntity.ok(produtoAtualizado);
 	}
 
+	// restaurante/produtos/categoria/PRATO_PRINCIPAL?page=0&size=10
+	@GetMapping("/categoria/{categoria}")
+	public ResponseEntity<Page<ProdutoDTO>> buscarPorCategoria(@PathVariable CategoriaProduto categoria,
+			@PageableDefault(size = 10) Pageable pageable) {
+
+		Page<ProdutoDTO> produtos = produtoService.buscarPorCategoria(categoria, pageable);
+		return ResponseEntity.ok(produtos);
+	}
 
 }
