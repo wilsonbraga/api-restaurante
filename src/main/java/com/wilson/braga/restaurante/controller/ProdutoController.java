@@ -1,6 +1,7 @@
 package com.wilson.braga.restaurante.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,5 +49,12 @@ public class ProdutoController {
 		Page<ProdutoDTO> produtosMaisVendidos = produtoService.buscarProdutosMaisVendidos(pageable);
 		return ResponseEntity.ok(produtosMaisVendidos);
 	}
+	
+	@GetMapping("/top10-mais-vendidos")
+	public ResponseEntity<List<ProdutoDTO>> buscarTop10ProdutosMaisVendidos() {
+		List<ProdutoDTO> top10Produtos = produtoService.buscarTop10ProdutosMaisVendidos();
+		return ResponseEntity.ok(top10Produtos);
+	}
+
 
 }
