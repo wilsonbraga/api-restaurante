@@ -10,11 +10,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -80,6 +82,16 @@ public class ProdutoController {
 	public ResponseEntity<Void> excluirProduto(@PathVariable Long id) {
 		produtoService.excluir(id);
 		return ResponseEntity.noContent().build();
+	}
+	
+	// /restaurante/produtos/2/disponibilidade?disponivel=false
+	@PatchMapping("/{id}/disponibilidade")
+	public ResponseEntity<ProdutoDTO> atualizarDisponibilidade(@PathVariable Long id,
+			@RequestParam boolean disponivel) {
+
+		ProdutoDTO produtoAtualizado = produtoService.atualizarProdutoDisponivel(id, disponivel);
+
+		return ResponseEntity.ok(produtoAtualizado);
 	}
 
 }
