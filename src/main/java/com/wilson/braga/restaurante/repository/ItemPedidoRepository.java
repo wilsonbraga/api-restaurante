@@ -39,5 +39,10 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 			@Param("dataInicio") Date dataInicio, 
 			@Param("dataFim") Date dataFim); 
 	
+	// Calcular o valor total vendido de um produto específico
+	@Query("SELECT SUM(i.quantidade * i.precoUnitario) FROM ItemPedido i WHERE i.produto.id = produtoId")
+	Double calcularValorTotalVendidoPorProduto(@Param("produtoId") Long produtoId);
+	
+	
 	
 }
