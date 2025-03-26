@@ -2,6 +2,8 @@ package com.wilson.braga.restaurante.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +17,6 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 	// Buscar todos os itens que contêm um produto específico
 	List<ItemPedido> findByProdutoId(Long produtoId);
 	
-	
+	// Buscar itens por pedido com paginação
+	Page<ItemPedido> findByPedidoId(Long pedidoId, Pageable pageable);
 }
