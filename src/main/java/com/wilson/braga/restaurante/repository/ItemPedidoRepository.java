@@ -19,4 +19,9 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 	
 	// Buscar itens por pedido com paginação
 	Page<ItemPedido> findByPedidoId(Long pedidoId, Pageable pageable);
+	
+	// Contar quantos pedidos contêm um determinado produto
+	Long countByProdutoId(Long produtoId);
+	
+	
 }
