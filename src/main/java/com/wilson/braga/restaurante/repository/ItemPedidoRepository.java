@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.wilson.braga.restaurante.model.ItemPedido;
@@ -22,6 +23,13 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 	
 	// Contar quantos pedidos contêm um determinado produto
 	Long countByProdutoId(Long produtoId);
+	
+	// Buscar os itens mais pedidos (para estatísticas)
+	@Query("SELECT i.produto.id, i.produto.nome, SUM(i.quantidade) as total "
+			+ "FROM ItemPedido i "
+			+ "GROUP BY i.produto.id, i.produyo.nome "
+			+ "ORDER BY total DESC")
+	List<ItemPedido> findMostOrderedItems(Pageable pageable);
 	
 	
 }
