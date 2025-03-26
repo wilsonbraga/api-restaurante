@@ -29,7 +29,7 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 	// Buscar os itens mais pedidos (para estatísticas)
 	@Query("SELECT i.produto.id, i.produto.nome, SUM(i.quantidade) as total "
 			+ "FROM ItemPedido i "
-			+ "GROUP BY i.produto.id, i.produyo.nome "
+			+ "GROUP BY i.produto.id, i.produto.nome "
 			+ "ORDER BY total DESC")
 	List<ItemPedido> findMostOrderedItems(Pageable pageable);
 	
