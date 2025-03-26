@@ -37,7 +37,7 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 	@Query("SELECT i FROM ItemPedido i WHERE i.pedido.dataCriacao BETWEEN :dataInicio AND :dataFim")
 	List<ItemPedido> findByPedidoDataCriacaoBetween(
 			@Param("dataInicio") Date dataInicio, 
-			@Param("dataFim") Date dataFim);
+			@Param("dataFim") Date dataFim); 
 	
 	
 }
