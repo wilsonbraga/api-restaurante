@@ -11,14 +11,28 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.wilson.braga.restaurante.dto.ItemPedidoDTO;
 import com.wilson.braga.restaurante.model.ItemPedido;
+import com.wilson.braga.restaurante.model.Pedido;
+import com.wilson.braga.restaurante.model.Produto;
 import com.wilson.braga.restaurante.repository.ItemPedidoRepository;
+import com.wilson.braga.restaurante.repository.PedidoRepository;
+import com.wilson.braga.restaurante.repository.ProdutoRepository;
 
 @Service
 public class ItemPedidoService {
 
 	@Autowired
 	private ItemPedidoRepository itemPedidoRepository;
+	
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
+	@Autowired
+	private ProdutoRepository produtoRepository;
+	
+	@Autowired
+	private ProdutoService produtoService;
 
+	
 	@Transactional(readOnly = true)
 	public List<ItemPedidoDTO> findByPedidoId(Long pedidoId) {
 		List<ItemPedido> itens = itemPedidoRepository.findByPedidoId(pedidoId);
@@ -32,7 +46,31 @@ public class ItemPedidoService {
 		return convertToDTO(item);
 	}
 	
-	
+	@Transactional
+	public ItemPedidoDTO save(ItemPedidoDTO itemDTO, Long pedidoId) {
+		Pedido pedido = pedidoRepository.findById(pedidoId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Pedido não encontrado com ID: " + pedidoId));
+		
+		Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com ID: " + itemDTO.getProdutoId()));
+		
+		//VERIFICA SE O PRODUTO ESTÁ DISPONÍVEL
+		if(!produto.getDisponivel()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "O Produto " + produto.getNome() + " não está disponivel.");
+		}
+		
+		 ItemPedido item = new ItemPedido();
+		 item.setPedido(pedido);
+		 item.setProduto(produto); // ISSO TAMBÉM DEFINE O PREÇO UNITÁRIO
+		 item.setQuantidade(itemDTO.getQuantidade());
+		 
+		 ItemPedido savaItem = itemPedidoRepository.save(item);
+		 
+		 // ATUALIZAR ESTATÍSTICAS DE VENDAS
+		 produtoService.incrementarVendas(produto.getId(), item.getQuantidade());
+		 
+		 return convertToDTO(savaItem);
+	}
 	
 
 	// Conversão entre DTO e Entidade
