@@ -22,17 +22,16 @@ public class ItemPedidoService {
 
 	@Autowired
 	private ItemPedidoRepository itemPedidoRepository;
-	
+
 	@Autowired
 	private PedidoRepository pedidoRepository;
-	
+
 	@Autowired
 	private ProdutoRepository produtoRepository;
-	
+
 	@Autowired
 	private ProdutoService produtoService;
 
-	
 	@Transactional(readOnly = true)
 	public List<ItemPedidoDTO> findByPedidoId(Long pedidoId) {
 		List<ItemPedido> itens = itemPedidoRepository.findByPedidoId(pedidoId);
@@ -45,33 +44,66 @@ public class ItemPedidoService {
 				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item pedido não encontrado com ID: " + id));
 		return convertToDTO(item);
 	}
-	
+
 	@Transactional
 	public ItemPedidoDTO save(ItemPedidoDTO itemDTO, Long pedidoId) {
-		Pedido pedido = pedidoRepository.findById(pedidoId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Pedido não encontrado com ID: " + pedidoId));
-		
+		Pedido pedido = pedidoRepository.findById(pedidoId).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado com ID: " + pedidoId));
+
 		Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado com ID: " + itemDTO.getProdutoId()));
-		
-		//VERIFICA SE O PRODUTO ESTÁ DISPONÍVEL
-		if(!produto.getDisponivel()) {
-			throw new ResponseStatusException(HttpStatus.CONFLICT, "O Produto " + produto.getNome() + " não está disponivel.");
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Produto não encontrado com ID: " + itemDTO.getProdutoId()));
+
+		// VERIFICA SE O PRODUTO ESTÁ DISPONÍVEL
+		if (!produto.getDisponivel()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT,
+					"Não temos o Produto " + produto.getNome() + " no momento, escolha outra opção.");
 		}
-		
-		 ItemPedido item = new ItemPedido();
-		 item.setPedido(pedido);
-		 item.setProduto(produto); // ISSO TAMBÉM DEFINE O PREÇO UNITÁRIO
-		 item.setQuantidade(itemDTO.getQuantidade());
-		 
-		 ItemPedido savaItem = itemPedidoRepository.save(item);
-		 
-		 // ATUALIZAR ESTATÍSTICAS DE VENDAS
-		 produtoService.incrementarVendas(produto.getId(), item.getQuantidade());
-		 
-		 return convertToDTO(savaItem);
+
+		ItemPedido item = new ItemPedido();
+		item.setPedido(pedido);
+		item.setProduto(produto); // ISSO TAMBÉM DEFINE O PREÇO UNITÁRIO
+		item.setQuantidade(itemDTO.getQuantidade());
+
+		ItemPedido savaItem = itemPedidoRepository.save(item);
+
+		// ATUALIZAR ESTATÍSTICAS DE VENDAS
+		produtoService.incrementarVendas(produto.getId(), item.getQuantidade());
+
+		return convertToDTO(savaItem);
 	}
 	
+	@Transactional
+	public ItemPedidoDTO update(Long id, ItemPedidoDTO itemDTO) {
+
+		ItemPedido existeItem = itemPedidoRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item de Pedido não encontrado com ID: " + id));
+
+		// SE O PRODUTO FOR ALTERADO, VERIFICAR DISPONIBILIDADE
+		if (!itemDTO.getProdutoId().equals(existeItem.getProduto().getId())) {
+
+			Produto novoProduto = produtoRepository.findById(itemDTO.getProdutoId())
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+							"Produto não encontrado com ID: " + itemDTO.getProdutoId()));
+
+			if (!novoProduto.getDisponivel()) {
+				throw new ResponseStatusException(HttpStatus.CONFLICT,
+						"Não temos o Produto " + novoProduto.getNome() + " no momento, escolha outra opção.");
+			}
+			// ATUALIZAR ESTATÍSTICAS (DECREMENTAR O ANTIGO PRODUTO)
+			produtoService.incrementarVendas(novoProduto.getId(), itemDTO.getQuantidade());
+		} else {
+			// AJUSTAR ESTATÍSTICAS SE SÓ A QUANTIDADE MUDOU
+			int diferenca = itemDTO.getQuantidade() - existeItem.getQuantidade();
+			if (diferenca != 0) {
+				produtoService.incrementarVendas(existeItem.getProduto().getId(), diferenca);
+			}
+		}
+		existeItem.setQuantidade(itemDTO.getQuantidade());
+
+		ItemPedido itemAtualizado = itemPedidoRepository.save(existeItem);
+		return convertToDTO(itemAtualizado);
+	}
 
 	// Conversão entre DTO e Entidade
 	private ItemPedidoDTO convertToDTO(ItemPedido item) {
