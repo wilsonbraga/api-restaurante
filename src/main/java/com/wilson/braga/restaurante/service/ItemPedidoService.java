@@ -124,6 +124,24 @@ public class ItemPedidoService {
 		});
 	}
 
+	@Transactional(readOnly = true)
+	public Double calcularValorTotalPorProduto(Long produtoId) {
+
+		if (produtoId == null || produtoId <= 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id do produto é inválido .");
+		}
+
+		boolean produtoExiste = produtoRepository.existsById(produtoId);
+
+		if (!produtoExiste) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado para o ID: " + produtoId);
+		}
+
+		Double total = itemPedidoRepository.calcularValorTotalVendidoPorProduto(produtoId);
+
+		return total != null ? total : 0.0;
+	}
+
 	// Conversão entre DTO e Entidade
 	private ItemPedidoDTO convertToDTO(ItemPedido item) {
 		ItemPedidoDTO dto = new ItemPedidoDTO();
