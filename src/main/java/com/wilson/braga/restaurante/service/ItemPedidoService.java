@@ -4,15 +4,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.wilson.braga.restaurante.dto.ItemPedidoDTO;
+import com.wilson.braga.restaurante.dto.RelatorioProdutoDTO;
 import com.wilson.braga.restaurante.model.ItemPedido;
 import com.wilson.braga.restaurante.model.Pedido;
 import com.wilson.braga.restaurante.model.Produto;
+import com.wilson.braga.restaurante.projection.RelatorioProdutoProjection;
 import com.wilson.braga.restaurante.repository.ItemPedidoRepository;
 import com.wilson.braga.restaurante.repository.PedidoRepository;
 import com.wilson.braga.restaurante.repository.ProdutoRepository;
@@ -72,7 +76,7 @@ public class ItemPedidoService {
 
 		return convertToDTO(savaItem);
 	}
-	
+
 	@Transactional
 	public ItemPedidoDTO update(Long id, ItemPedidoDTO itemDTO) {
 
@@ -103,6 +107,21 @@ public class ItemPedidoService {
 
 		ItemPedido itemAtualizado = itemPedidoRepository.save(existeItem);
 		return convertToDTO(itemAtualizado);
+	}
+
+	// mostra quais produtos vendem mais
+	@Transactional(readOnly = true)
+	public Page<RelatorioProdutoDTO> getItensMaisVendidos(Pageable pageable) {
+		Page<RelatorioProdutoProjection> itensMaisVendidos = itemPedidoRepository.findMostOrderedItems(pageable);
+
+		return itensMaisVendidos.map(projection -> {
+			RelatorioProdutoDTO dto = new RelatorioProdutoDTO();
+			dto.setProdutoId(projection.getProdutoId());
+			dto.setNomeProduto(projection.getNomeProduto());
+			dto.setQuantidadeTotal(projection.getQuantidadeTotal());
+			dto.setValorTotal(projection.getValorTotal());
+			return dto;
+		});
 	}
 
 	// Conversão entre DTO e Entidade
