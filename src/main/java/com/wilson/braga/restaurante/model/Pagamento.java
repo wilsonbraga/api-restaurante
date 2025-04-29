@@ -45,6 +45,9 @@ public class Pagamento implements Serializable {
 	@Column
 	private String observacao;
 	
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
+	
 	@PrePersist
     public void prePersist() {
         this.dataPagamento = LocalDateTime.now();
@@ -106,6 +109,14 @@ public class Pagamento implements Serializable {
 
 	public void setObservacao(String observacao) {
 		this.observacao = observacao;
+	}
+	
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override

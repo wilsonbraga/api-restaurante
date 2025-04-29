@@ -39,6 +39,9 @@ public class Produto implements Serializable {
 	private int tempoPreparoMedio;
 	
 	private int totalVendas; // para estatísticas
+	
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 
 	public Long getId() {
 		return id;
@@ -111,6 +114,15 @@ public class Produto implements Serializable {
 		this.totalVendas = totalVendas;
 	}
 
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
+	}
+	
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);

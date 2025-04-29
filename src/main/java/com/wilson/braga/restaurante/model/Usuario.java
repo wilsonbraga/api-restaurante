@@ -3,7 +3,6 @@ package com.wilson.braga.restaurante.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,9 +10,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Usuario implements Serializable {
@@ -23,15 +22,15 @@ public class Usuario implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Min(value = 2, message = "Nome não pode ter menos de 2 caracteres.")
-	@Max(value = 100, message = "Nome não pode ter mais de 100 caracteres.")
+
 	@Column(nullable = false)
 	@NotBlank(message = "Nome não pode está em banco.")
+	@Size(min = 2, max = 100, message = "Nome não pode ter menos de 2 caracteres e nem mais de 100 caracteres.")
 	private String nome;
 	
 	@NotBlank(message = "email não pode está em banco.")
 	@Column(nullable = false, unique = true)
+	@Email(message = "Email tem que ser válido")
 	private String email;
 	
 	@NotBlank(message = "Senha não pode está em banco.")
@@ -41,6 +40,9 @@ public class Usuario implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
+	
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 
 	public Long getId() {
 		return id;
@@ -80,6 +82,14 @@ public class Usuario implements Serializable {
 	
 	public void setRole(Role role) {
 		this.role = role;
+	}
+	
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override

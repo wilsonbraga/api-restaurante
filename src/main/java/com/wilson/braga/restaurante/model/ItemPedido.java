@@ -32,6 +32,9 @@ public class ItemPedido implements Serializable {
 	private int quantidade;
 
 	private Double precoUnitario;
+	
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 
 	public Long getId() {
 		return id;
@@ -78,6 +81,14 @@ public class ItemPedido implements Serializable {
 	//calcula o valor total do item (quantidade × preço unitário)
 	public Double getSubtotatal() {
 		return quantidade * precoUnitario;
+	}
+	
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override

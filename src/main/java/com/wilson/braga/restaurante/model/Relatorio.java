@@ -34,6 +34,9 @@ public class Relatorio implements Serializable {
 
 	@Column(nullable = false)
 	private double total;
+	
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 
 	public Long getId() {
 		return id;
@@ -78,6 +81,14 @@ public class Relatorio implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
+	}
+	
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override

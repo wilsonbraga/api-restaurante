@@ -38,6 +38,8 @@ public class Mesa implements Serializable {
 	@OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pedido> pedidos = new ArrayList<>();
 
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 	
 	public Long getId() {
 		return id;
@@ -77,6 +79,14 @@ public class Mesa implements Serializable {
 	
 	public void setPedidos(List<Pedido> pedidos) {
 		this.pedidos = pedidos;
+	}
+	
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override

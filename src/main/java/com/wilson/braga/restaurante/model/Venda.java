@@ -60,6 +60,9 @@ public class Venda implements Serializable {
 
 	@OneToMany(mappedBy = "venda", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	public List<Pagamento> pagamentos = new ArrayList<>();
+	
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 
 	@PrePersist
 	public void prePersist() {
@@ -170,6 +173,14 @@ public class Venda implements Serializable {
 	
 	public Double getSaldoRestante() {
 		return total - getTotalPago();
+	}
+	
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override

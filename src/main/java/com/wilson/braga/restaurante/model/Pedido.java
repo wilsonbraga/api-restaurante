@@ -68,6 +68,9 @@ public class Pedido implements Serializable {
 	private TipoAtendimento tipoAtendimento;
 
 	private Integer tempoPreparo; // em minutos
+	
+	@Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 
 	@PrePersist
 	public void prePersist() {
@@ -209,6 +212,14 @@ public class Pedido implements Serializable {
 
 	public void setTempoPreparo(Integer tempoPreparo) {
 		this.tempoPreparo = tempoPreparo;
+	}
+	
+	public String getTenantId() {
+		return tenantId;
+	}
+	
+	public void setTenantId(String tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	@Override
