@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.wilson.braga.restaurante.model.ItemPedido;
+import com.wilson.braga.restaurante.projection.RelatorioProdutoProjection;
 
 @Repository
 public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
@@ -27,11 +28,11 @@ public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long> {
 	Long countByProdutoId(Long produtoId);
 	
 	// Buscar os itens mais pedidos (para estatísticas)
-	@Query("SELECT i.produto.id, i.produto.nome, SUM(i.quantidade) as total "
-			+ "FROM ItemPedido i "
-			+ "GROUP BY i.produto.id, i.produto.nome "
-			+ "ORDER BY total DESC")
-	List<ItemPedido> findMostOrderedItems(Pageable pageable);
+	@Query("SELECT i.produto.id AS produtoId, i.produto.nome AS nomeProduto, SUM(i.quantidade) AS quantidadeTotal, SUM(i.quantidade * i.precoUnitario) AS valorTotal "
+		     + "FROM ItemPedido i "
+		     + "GROUP BY i.produto.id, i.produto.nome "
+		     + "ORDER BY quantidadeTotal DESC")
+	Page<RelatorioProdutoProjection> findMostOrderedItems(Pageable pageable);
 	
 	// Buscar itens de pedidos em um intervalo de datas
 	@Query("SELECT i FROM ItemPedido i WHERE i.pedido.dataCriacao BETWEEN :dataInicio AND :dataFim")
