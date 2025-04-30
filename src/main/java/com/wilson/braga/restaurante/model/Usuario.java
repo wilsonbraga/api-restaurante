@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,9 +17,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = String.class))
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-public class Usuario implements Serializable {
+public class Usuario extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -47,8 +44,6 @@ public class Usuario implements Serializable {
 	@Column(nullable = false)
 	private Role role;
 	
-	@Column(name = "tenant_id", nullable = false)
-    private String tenantId;
 
 	public Long getId() {
 		return id;
@@ -90,13 +85,6 @@ public class Usuario implements Serializable {
 		this.role = role;
 	}
 	
-	public String getTenantId() {
-		return tenantId;
-	}
-	
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
 
 	@Override
 	public int hashCode() {

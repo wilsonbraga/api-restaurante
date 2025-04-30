@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,9 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-@FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = String.class))
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-public class ItemPedido implements Serializable {
+public class ItemPedido extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,8 +36,6 @@ public class ItemPedido implements Serializable {
 
 	private Double precoUnitario;
 	
-	@Column(name = "tenant_id", nullable = false)
-    private String tenantId;
 
 	public Long getId() {
 		return id;
@@ -89,14 +84,6 @@ public class ItemPedido implements Serializable {
 		return quantidade * precoUnitario;
 	}
 	
-	public String getTenantId() {
-		return tenantId;
-	}
-	
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);

@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,9 +18,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 
 @Entity
-@FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = String.class))
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-public class Pagamento implements Serializable {
+public class Pagamento extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -50,10 +47,7 @@ public class Pagamento implements Serializable {
 
 	@Column
 	private String observacao;
-	
-	@Column(name = "tenant_id", nullable = false)
-    private String tenantId;
-	
+
 	@PrePersist
     public void prePersist() {
         this.dataPagamento = LocalDateTime.now();
@@ -117,13 +111,6 @@ public class Pagamento implements Serializable {
 		this.observacao = observacao;
 	}
 	
-	public String getTenantId() {
-		return tenantId;
-	}
-	
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
 
 	@Override
 	public int hashCode() {

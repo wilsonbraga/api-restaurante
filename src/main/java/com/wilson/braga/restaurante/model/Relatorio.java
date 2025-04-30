@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,9 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-@FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = String.class))
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-public class Relatorio implements Serializable {
+public class Relatorio extends BaseEntity implements Serializable {
 
 	
 	private static final long serialVersionUID = 1L;
@@ -41,8 +38,6 @@ public class Relatorio implements Serializable {
 	@Column(nullable = false)
 	private double total;
 	
-	@Column(name = "tenant_id", nullable = false)
-    private String tenantId;
 
 	public Long getId() {
 		return id;
@@ -89,13 +84,6 @@ public class Relatorio implements Serializable {
 		return Objects.hash(id);
 	}
 	
-	public String getTenantId() {
-		return tenantId;
-	}
-	
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
 
 	@Override
 	public boolean equals(Object obj) {

@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,9 +22,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
 @Entity
-@FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = String.class))
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-public class Pedido implements Serializable {
+public class Pedido extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -75,8 +72,6 @@ public class Pedido implements Serializable {
 
 	private Integer tempoPreparo; // em minutos
 	
-	@Column(name = "tenant_id", nullable = false)
-    private String tenantId;
 
 	@PrePersist
 	public void prePersist() {
@@ -220,13 +215,6 @@ public class Pedido implements Serializable {
 		this.tempoPreparo = tempoPreparo;
 	}
 	
-	public String getTenantId() {
-		return tenantId;
-	}
-	
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
 
 	@Override
 	public int hashCode() {

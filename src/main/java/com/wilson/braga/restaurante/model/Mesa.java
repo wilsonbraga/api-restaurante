@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,9 +19,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity
-@FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = String.class))
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-public class Mesa implements Serializable {
+public class Mesa extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -44,8 +41,6 @@ public class Mesa implements Serializable {
 	@OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pedido> pedidos = new ArrayList<>();
 
-	@Column(name = "tenant_id", nullable = false)
-    private String tenantId;
 	
 	public Long getId() {
 		return id;
@@ -87,13 +82,7 @@ public class Mesa implements Serializable {
 		this.pedidos = pedidos;
 	}
 	
-	public String getTenantId() {
-		return tenantId;
-	}
-	
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
+
 
 	@Override
 	public int hashCode() {
